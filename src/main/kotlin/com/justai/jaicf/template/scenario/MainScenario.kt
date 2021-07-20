@@ -2,57 +2,65 @@ package com.justai.jaicf.template.scenario
 
 import com.justai.jaicf.activator.caila.caila
 import com.justai.jaicf.builder.Scenario
+import com.justai.jaicf.channel.yandexalice.alice
+import com.justai.jaicf.channel.yandexalice.model.AliceEvent
 
 val mainScenario = Scenario {
-    state("start") {
+    state("main") {
         activators {
-            regex("/start")
-            intent("Hello")
+            event(AliceEvent.START)
         }
+
         action {
             reactions.run {
-                image("https://media.giphy.com/media/ICOgUNjpvO0PC/source.gif")
-                sayRandom(
-                    "Hello! How can I help?",
-                    "Hi there! How can I help you?"
-                )
-                buttons(
-                    "Help me!",
-                    "How are you?",
-                    "What is your name?"
+                say("Управдом слушает. Вы хотите сообщить ваши показания счетчиков?")
+                buttons("Да", "Нет")
+                alice?.image(
+                    "https://i.imgur.com/SUSGpqG.jpg",
+                    "Управдом слушает",
+                    "Хотите сообщить ваши показания счетчиков?"
                 )
             }
         }
     }
 
-    state("bye") {
+    state("yes") {
         activators {
-            intent("Bye")
+            regex("да|хочу")
         }
 
         action {
-            reactions.sayRandom(
-                "See you soon!",
-                "Bye-bye!"
-            )
-            reactions.image("https://media.giphy.com/media/EE185t7OeMbTy/source.gif")
+//            record("Сколько вы потратили холодной воды?", "warm")
+        }
+
+        state("warm") {
+
+            action {
+//                record("Сколько ушло горячей?", "done")
+            }
+
+            state("done") {
+                action {
+                    reactions.say("Записала ваши показания. Ждите квитанцию на оплату.")
+                    reactions.alice?.endSession()
+                }
+            }
         }
     }
 
-    state("smalltalk", noContext = true) {
+    state("no") {
         activators {
-            anyIntent()
+            regex("нет|не хочу")
         }
 
-        action(caila) {
-            activator.topIntent.answer?.let { reactions.say(it) } ?: reactions.go("/fallback")
+        action {
+            reactions.say("Тогда не отвлекайте меня от работы. До свидания!")
+            reactions.alice?.endSession()
         }
     }
 
     fallback {
-        reactions.sayRandom(
-            "Sorry, I didn't get that...",
-            "Sorry, could you repeat please?"
-        )
+        reactions.say("Не тратьте мое время зря. Вы хотите сообщить показания счетчиков?")
+        reactions.buttons("Да", "Нет")
     }
 }

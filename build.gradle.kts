@@ -26,7 +26,10 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     implementation("ch.qos.logback:logback-classic:$logback")
+    implementation("io.ktor:ktor-server-netty:1.3.1")
 
+    implementation("com.just-ai.jaicf:core:$jaicf")
+    implementation("com.just-ai.jaicf:yandex-alice:$jaicf")
     implementation("com.just-ai.jaicf:core:$jaicf")
     implementation("com.just-ai.jaicf:jaicp:$jaicf")
     implementation("com.just-ai.jaicf:caila:$jaicf")
